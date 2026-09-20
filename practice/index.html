@@ -3,14 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>StudyFlow - Student Study Planner</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h2> Hello
-        Hi
-        Bye
-        Bye
-    </h2>
-    
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            🎓 <span>StudyFlow</span>
+        </div>
+
+        <nav>
+            <a href="#dashboard" class="active">🏠 Dashboard</a>
+            <a href="#subjects">📚 Subjects</a>
+            <a href="#planner">📅 Study Plan</a>
+            <a href="#progress">📊 Progress</a>
+            <a href="#settings">⚙️ Settings</a>
+        </nav>
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Header -->
+        <header class="topbar">
+            <div>
+                <h1>Good Morning! 👋</h1>
+                <p>Let's make today's study session productive.</p>
+            </div>
+
+            <div class="profile">
+                <div class="avatar">A</div>
+                <span>Student</span>
+            </div>
+        </header>
+
+
+        <!-- Dashboard -->
+        <section id="dashboard">
+
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div>
+                        <h3 id="totalSubjects">0</h3>
+                        <p>Total Subjects</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div>
+                        <h3 id="studyHours">0 hrs</h3>
+                        <p>Today's Study Hours</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div>
+                        <h3 id="completedTasks">0</h3>
+                        <p>Tasks Completed</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div>
+                        <h3 id="overallProgress">0%</h3>
+                        <p>Overall Progress</p>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Today's Focus -->
+            <div class="section-card focus-card">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Today's Focus 🎯</h2>
+                        <p>Your important study sessions for today</p>
+                    </div>
+                </div>
+
+                <div id="focusList">
+
+                    <div class="focus-item">
+                        <div>
+                            <strong>📐 Mathematics</strong>
+                            <p>Practice important problems</p>
+                        </div>
+
+                        <span>1 hour</span>
+                    </div>
+
+                    <div class="focus-item">
+                        <div>
+                            <strong>💻 DBMS</strong>
+                            <p>Revise SQL and normalization</p>
+                        </div>
+
+                        <span>1 hour</span>
+                    </div>
+
+                    <div class="focus-item">
+                        <div>
+                            <strong>🐍 Python</strong>
+                            <p>Practice coding problems</p>
+                        </div>
+
+                        <span>45 min</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Subjects -->
+            <div class="section-card" id="subjects">
+
+                <div class="section-header">
+                    <div>
+                        <h2>My Subjects 📚</h2>
+                        <p>Add your subjects and exam details</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openModal()">
+                        + Add Subject
+                    </button>
+                </div>
+
+
+                <div id="subjectList" class="subject-grid">
+
+                    <!-- Subjects will be added here -->
+
+                </div>
+
+            </div>
+
+
+            <!-- Study Planner -->
+            <div class="section-card" id="planner">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Weekly Study Plan 📅</h2>
+                        <p>Your planned study sessions</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="generatePlan()">
+                        Generate Plan
+                    </button>
+                </div>
+
+
+                <div class="days-grid">
+
+                    <div class="day-card">
+                        <h3>Monday</h3>
+                        <div id="monday" class="sessions"></div>
+                    </div>
+
+                    <div class="day-card">
+                        <h3>Tuesday</h3>
+                        <div id="tuesday" class="sessions"></div>
+                    </div>
+
+                    <div class="day-card">
+                        <h3>Wednesday</h3>
+                        <div id="wednesday" class="sessions"></div>
+                    </div>
+
+                    <div class="day-card">
+                        <h3>Thursday</h3>
+                        <div id="thursday" class="sessions"></div>
+                    </div>
+
+                    <div class="day-card">
+                        <h3>Friday</h3>
+                        <div id="friday" class="sessions"></div>
+                    </div>
+
+                    <div class="day-card">
+                        <h3>Saturday</h3>
+                        <div id="saturday" class="sessions"></div>
+                    </div>
+
+                    <div class="day-card">
+                        <h3>Sunday</h3>
+                        <div id="sunday" class="sessions"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Progress -->
+            <div class="section-card" id="progress">
+
+                <div class="section-header">
+                    <div>
+                        <h2>My Progress 📊</h2>
+                        <p>Track your study performance</p>
+                    </div>
+                </div>
+
+
+                <div class="progress-container">
+
+                    <div class="progress-info">
+                        <span>Overall Completion</span>
+                        <strong id="progressText">0%</strong>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div id="progressBar"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="progress-stats">
+
+                    <div>
+                        <h3 id="plannedTasks">0</h3>
+                        <p>Planned Tasks</p>
+                    </div>
+
+                    <div>
+                        <h3 id="doneTasks">0</h3>
+                        <p>Completed</p>
+                    </div>
+
+                    <div>
+                        <h3 id="pendingTasks">0</h3>
+                        <p>Pending</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Add Subject Modal -->
+
+    <div class="modal" id="subjectModal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2>Add Subject</h2>
+
+                <button onclick="closeModal()">×</button>
+            </div>
+
+
+            <form id="subjectForm">
+
+                <label>Subject Name</label>
+
+                <input
+                    type="text"
+                    id="subjectName"
+                    placeholder="Example: Mathematics"
+                    required
+                >
+
+
+                <label>Difficulty</label>
+
+                <select id="difficulty">
+
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+
+                </select>
+
+
+                <label>Exam Date</label>
+
+                <input
+                    type="date"
+                    id="examDate"
+                    required
+                >
+
+
+                <label>Daily Study Hours</label>
+
+                <input
+                    type="number"
+                    id="dailyHours"
+                    min="0.5"
+                    step="0.5"
+                    placeholder="Example: 1.5"
+                    required
+                >
+
+
+                <button type="submit" class="primary-btn full-btn">
+                    Add Subject
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
 </body>
 </html>
