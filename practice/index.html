@@ -215,9 +215,9 @@
                 Progress
             </a>
 
-            <a href="#settings" class="nav-item">
-                Settings
-            </a>
+            <a href="#" class="nav-item" onclick="openSettings(event)">
+    Settings
+</a>
 
         </nav>
 
@@ -554,6 +554,104 @@
     </main>
 
 </div>
+
+<!-- ================= SETTINGS PANEL ================= -->
+
+<div id="settingsOverlay" class="settings-overlay" onclick="closeSettings()"></div>
+
+<aside id="settingsPanel" class="settings-panel">
+
+    <div class="settings-header">
+        <div>
+            <h2>Settings</h2>
+            <p>Customize your StudyFlow experience.</p>
+        </div>
+
+        <button
+            type="button"
+            class="settings-close"
+            onclick="closeSettings()"
+        >
+            ×
+        </button>
+    </div>
+
+    <div class="settings-body">
+
+        <!-- Profile -->
+        <div class="settings-group">
+            <h3>Profile</h3>
+
+            <label for="settingsName">
+                Student Name
+            </label>
+
+            <input
+                type="text"
+                id="settingsName"
+                placeholder="Enter your name"
+            >
+        </div>
+
+        
+
+        <!-- Appearance -->
+        <div class="settings-group">
+            <h3>Appearance</h3>
+
+            <div class="setting-option">
+                <div>
+                    <strong>Theme</strong>
+                    <p>Choose your preferred theme.</p>
+                </div>
+
+                <select id="themeSelect">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="settings-group">
+            <h3>Planner</h3>
+
+            <button
+                type="button"
+                class="reset-btn"
+                onclick="resetPlanner()"
+            >
+                Reset Planner Data
+            </button>
+
+            <p class="settings-note">
+                This will clear your current subjects and study plan.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="settings-footer">
+
+        <button
+            type="button"
+            class="secondary-btn"
+            onclick="closeSettings()"
+        >
+            Cancel
+        </button>
+
+        <button
+            type="button"
+            class="primary-btn"
+            onclick="saveSettings()"
+        >
+            Save Changes
+        </button>
+
+    </div>
+
+</aside>
 
 
 <!-- ================= SUBJECT MODAL ================= -->

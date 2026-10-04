@@ -582,21 +582,16 @@ function updateDashboard() {
    STUDY PLAN
 ========================================== */
 
+
+        
 function generatePlan() {
 
     const subjects = getSubjects();
 
-
     if (subjects.length === 0) {
-
-        alert(
-            "Add at least one subject before generating a study plan."
-        );
-
+        alert("Add at least one subject before generating a study plan.");
         return;
-
     }
-
 
     const days = [
         "monday",
@@ -608,127 +603,247 @@ function generatePlan() {
         "sunday"
     ];
 
+    // Clear previous plan
+    days.forEach(day => {
+        document.getElementById(day).innerHTML = "";
+    });
 
-    days.forEach(
-        day => {
+    // Difficulty score
+    const difficultyScore = {
+        Easy: 1,
+        Medium: 2,
+        Hard: 3
+    };
 
-            document
-                .getElementById(day)
-                .innerHTML = "";
+    // Today's date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-        }
-    );
+    // Calculate priority
+    const prioritizedSubjects = subjects.map(subject => {
 
+        const examDate = new Date(subject.examDate);
+        examDate.setHours(0, 0, 0, 0);
 
-    subjects.forEach(
-        (subject, index) => {
+        const daysLeft = Math.ceil(
+            (examDate - today) / (1000 * 60 * 60 * 24)
+        );
 
-            const day =
-                days[index % days.length];
+        const urgency =
+            daysLeft <= 3 ? 3 :
+            daysLeft <= 7 ? 2 :
+            1;
 
+        const priority =
+            difficultyScore[subject.difficulty] + urgency;
 
-            const session =
-                document.createElement("div");
+        return {
+            ...subject,
+            priority
+        };
 
-
-            session.className =
-                "session";
-
-
-            session.innerHTML = `
-
-                <strong>
-                    ${subject.name}
-                </strong>
-
-                <br>
-
-                <small>
-                    ${subject.dailyHours}
-                    hour(s) study session
-                </small>
-
-            `;
-
-
-            document
-                .getElementById(day)
-                .appendChild(session);
-
-        }
-    );
+    }).sort((a, b) => b.priority - a.priority);
 
 
-    updateFocus();
+    // Give every subject at least one session
+    const allocations = prioritizedSubjects.map(subject => ({
+        subject: subject,
+        sessions: 1,
+        remainder: 0
+    }));
 
-}
 
+    // Remaining sessions are distributed according to priority
+    let remainingSlots =
+        Math.max(0, days.length - prioritizedSubjects.length);
 
-function updateFocus() {
-
-    const container =
-        document.getElementById(
-            "focusList"
+    const totalPriority =
+        prioritizedSubjects.reduce(
+            (sum, subject) => sum + subject.priority,
+            0
         );
 
 
+    allocations.forEach(item => {
+
+        const idealExtra =
+            totalPriority === 0
+                ? 0
+                : (item.subject.priority / totalPriority) * remainingSlots;
+
+        const extra = Math.floor(idealExtra);
+
+        item.sessions += extra;
+        item.remainder = idealExtra - extra;
+
+    });
+
+
+    // Check how many sessions have been assigned
+    const usedSlots =
+        allocations.reduce(
+            (sum, item) => sum + item.sessions,
+            0
+        );
+
+    const leftoverSlots =
+        days.length - usedSlots;
+
+
+    // Give leftover sessions to subjects with the largest remainder
+    allocations
+        .sort((a, b) => b.remainder - a.remainder)
+        .slice(0, leftoverSlots)
+        .forEach(item => {
+            item.sessions += 1;
+        });
+
+
+    // Put subjects back in priority order
+    allocations.sort(
+        (a, b) =>
+            b.subject.priority - a.subject.priority
+    );
+
+
+    // Create a balanced weekly queue
+    const sessionQueue = [];
+
+    const maxSessions =
+        Math.max(
+            ...allocations.map(item => item.sessions)
+        );
+
+    for (let round = 0; round < maxSessions; round++) {
+
+        allocations.forEach(item => {
+
+            if (item.sessions > round) {
+                sessionQueue.push(item.subject);
+            }
+
+        });
+
+    }
+
+
+    // Place sessions from Monday to Sunday
+    sessionQueue.forEach((subject, index) => {
+
+        const day = days[index];
+
+        const session =
+            document.createElement("div");
+
+        session.className = "session";
+
+        session.innerHTML = `
+            <strong>
+                ${subject.name}
+            </strong>
+            <br>
+            <small>
+                ${subject.dailyHours}
+                hour(s) study session
+            </small>
+        `;
+
+        document
+            .getElementById(day)
+            .appendChild(session);
+
+    });
+
+
+    updateFocus();
+}
+
+    // Difficulty
+
+
+function updateFocus() {
+    const container = document.getElementById("focusList");
     const subjects = getSubjects();
 
-
     if (subjects.length === 0) {
-
         container.innerHTML = `
             <div class="empty-state">
                 No study sessions planned yet.
             </div>
         `;
-
         return;
-
     }
-
 
     container.innerHTML = "";
 
+    const difficultyScore = {
+        Easy: 1,
+        Medium: 2,
+        Hard: 3
+    };
 
-    subjects
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const prioritizedSubjects = [...subjects].sort((a, b) => {
+
+        const examA = new Date(a.examDate);
+        const examB = new Date(b.examDate);
+
+        examA.setHours(0, 0, 0, 0);
+        examB.setHours(0, 0, 0, 0);
+
+        const daysA = Math.ceil(
+            (examA - today) / (1000 * 60 * 60 * 24)
+        );
+
+        const daysB = Math.ceil(
+            (examB - today) / (1000 * 60 * 60 * 24)
+        );
+
+        const urgencyA =
+            daysA <= 3 ? 3 :
+            daysA <= 7 ? 2 : 1;
+
+        const urgencyB =
+            daysB <= 3 ? 3 :
+            daysB <= 7 ? 2 : 1;
+
+        const scoreA =
+            difficultyScore[a.difficulty] + urgencyA;
+
+        const scoreB =
+            difficultyScore[b.difficulty] + urgencyB;
+
+        return scoreB - scoreA;
+    });
+
+    prioritizedSubjects
         .slice(0, 3)
         .forEach(subject => {
 
-            const item =
-                document.createElement("div");
-
-
-            item.className =
-                "focus-item";
-
+            const item = document.createElement("div");
+            item.className = "focus-item";
 
             item.innerHTML = `
-
                 <div>
-
                     <strong>
                         ${subject.name}
                     </strong>
-
                     <p>
                         Focus on today's study goals
                     </p>
-
                 </div>
 
                 <span class="focus-time">
                     ${subject.dailyHours} hours
                 </span>
-
             `;
 
-
             container.appendChild(item);
-
         });
-
 }
+      
 
 
 /* ==========================================
@@ -752,4 +867,92 @@ document.addEventListener(
         }
 
     }
-);
+)
+function saveSettings() {
+
+    const name =
+        document.getElementById("settingsName").value.trim();
+
+    const theme =
+        document.getElementById("themeSelect").value;
+
+    // Update profile name
+    if (name) {
+        document.getElementById("profileName").textContent = name;
+
+        document.getElementById("welcomeMessage").textContent =
+            "Welcome back, " + name;
+
+        document.getElementById("profileAvatar").textContent =
+            name.charAt(0).toUpperCase();
+    }
+
+    // Apply theme
+    if (theme === "dark") {
+        document.body.classList.add("dark-mode");
+    } else {
+        document.body.classList.remove("dark-mode");
+    }
+
+    alert("Settings saved successfully!");
+
+    closeSettings();
+}
+function openSettings(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+    document
+        .getElementById("settingsPanel")
+        .classList.add("active");
+
+    document
+        .getElementById("settingsOverlay")
+        .classList.add("active");
+
+    const profileName =
+        document.getElementById("profileName").textContent.trim();
+
+    document.getElementById("settingsName").value =
+        profileName !== "Student" ? profileName : "";
+
+    const themeSelect =
+        document.getElementById("themeSelect");
+
+    themeSelect.value =
+        document.body.classList.contains("dark-mode")
+            ? "dark"
+            : "light";
+}
+
+
+function closeSettings() {
+
+    document
+        .getElementById("settingsPanel")
+        .classList.remove("active");
+
+    document
+        .getElementById("settingsOverlay")
+        .classList.remove("active");
+}
+
+
+function resetPlanner() {
+
+    const confirmReset =
+        confirm(
+            "Are you sure you want to reset all planner data?"
+        );
+
+    if (!confirmReset) {
+        return;
+    }
+
+    localStorage.removeItem("studyflowSubjects");
+    localStorage.removeItem("studyflowCompleted");
+
+    location.reload();
+}
